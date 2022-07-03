@@ -94,7 +94,10 @@ class GmailAPI {
         const threadId = await this.searchGmail("from:no-reply@cake.vn");
         const message = await this.readGmailContent(threadId);
 
-        const encodedMessage = await message.payload.body.data;
+        if (message?.payload?.body) {
+            const encodedMessage = await message.payload.body.data;
+        }
+        else return "lỗi api a hậu";
 
         const decodedStr = Buffer.from(encodedMessage, "base64").toString("ascii");
 
