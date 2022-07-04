@@ -94,13 +94,13 @@ class GmailAPI {
         const threadId = await this.searchGmail("from:no-reply@cake.vn");
         const message = await this.readGmailContent(threadId);
 
-        if (message?.payload?.body) {
+        try {
             const encodedMessage = await message.payload.body.data;
+        } catch (error) {
+            return "lỗi api a hậu" + error;
         }
-        else return "lỗi api a hậu";
 
         const decodedStr = Buffer.from(encodedMessage, "base64").toString("ascii");
-
         return decodedStr.includes(transid);
     };
 }
