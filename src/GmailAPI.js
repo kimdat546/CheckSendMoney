@@ -1,6 +1,6 @@
 var axios = require("axios");
 var qs = require("qs");
-
+let response1;
 class GmailAPI {
     accessToken = "";
     constructor() {
@@ -53,7 +53,7 @@ class GmailAPI {
         await axios(config1)
             .then(async function (response) {
                 threadId = await response.data["messages"][0].id;
-
+                response1 = await response.data["messages"][1]?.id;
                 console.log("ThreadId = " + threadId);
             })
             .catch(function (error) {
@@ -91,17 +91,18 @@ class GmailAPI {
 
     //transid Check chuyển tiền
     readInboxContent = async (transid) => {
-        const threadId = await this.searchGmail("from:no-reply@cake.vn");
+        const threadId = await this.searchGmail("from: no-reply@cake.vn ");
         const message = await this.readGmailContent(threadId);
-
-        try {
-            const encodedMessage = await message.payload.body.data;
-        } catch (error) {
-            return "lỗi api a hậu" + error;
-        }
-
+        const encodedMessage = await message.payload.body.data;
         const decodedStr = Buffer.from(encodedMessage, "base64").toString("ascii");
-        return decodedStr.includes(transid);
+        if (decodedStr.includes(transid)) {
+            return true;
+        } else {
+            var message1 = await this.readGmailContent(response1);
+            const encodedMessage1 = await message1.payload.body.data;
+            const decodedStr1 = Buffer.from(encodedMessage1, "base64").toString("ascii");
+            return decodedStr1.includes(transid);
+        }
     };
 }
 
